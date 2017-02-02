@@ -1,0 +1,32 @@
+.global
+_assert_asm: ; r0 -> condition, r1-> expression, r2->file, r3-> line
+    test r0, r0
+    jmp.eq 1f
+    ret
+1:
+    pushlr
+    push r3
+    push r2
+    push r1
+    mov r0, assert_str
+    call _puts
+    pop r0
+    call _puts
+    mov r0, assert_str_2
+    call _puts
+    pop r0
+    call _puts
+    mov r0, 58 ; ':'
+    call _putc
+    pop r0
+    call _puts
+    mov r0, 10
+    call _putc
+    pop r1
+    jmp r1
+
+assert_str:
+    .asciz "Assertion failed: "
+assert_str_2:
+    .asciz " in file: "
+    

@@ -1,0 +1,82 @@
+; struct block
+; 0: int size
+; 2: struct block* next
+; 4: int free
+; 6: int magic 
+.global
+_find_free_block_asm: ; struct block** last = r0, size_t size = r1
+    mov r2,r0
+    ;r0 = current, r2 = last
+    ld r0, [_global_base] ; current = global_base
+1: ; while
+    test r0,r0 ;current != 0
+    jmp.eq 3f
+    ld r3, [r0+4] ; r3 = current->free
+    test r3, r3
+    jmp.eq 2f   ; if free = 0, go to while loop
+    ld r3, [r0] ; r3 = current->size
+    cmp r3,r1
+    jmp.l 2f    ; if current->size < size, go to while loop
+    jmp 4f      ; else, go to finish
+2:              ; loop part of while loop
+    st [r2], r0
+    ld r0, [r0+2]
+    jmp 1b
+3:
+4:
+    ret
+
+
+.global
+_request_space_asm:  ; r0 =  struct block* last, r1 = size_t size
+    pushlr
+    push r1
+    push r0
+    mov r0, r1
+    add r0, 8  ; sizeof block
+    call _sbrk ; r0 = block
+    cmp r0,-1
+    jmp.ne 1f
+    mov r0,0
+    add r7, 4
+    pop r1
+    jmp r1
+1:
+    pop r2 ; r2 = last
+    test r2, r2 ; if (last)
+    jmp.eq 2f
+    st [r2+2], r0 ; last->next = block
+2:
+    pop r1  ; r1 = size
+    st [r0], r1  ; block->size = size
+    mov r1, 0
+    st [r0+2], r1 ; block->next = NULL
+    st [r0+4], r1 ; block->free = NULL
+    mov r1, 0xbeef
+    st [r0+6], r1 ; block->magic = 0xbeef
+    pop r1
+    jmp r1
+
+.global
+_calloc: ;r0 = elements, r1 = element_size
+    pushlr
+    push r4
+    call __mul2
+    test r1, r1 ;test for overflow
+    jmp.eq 1f
+    mov r0,0
+    jmp 5f
+1:              ; no overflow
+    mov r4,r0 ; r4 = size
+    call _malloc
+    mov r2, r4
+    mov r4, r0
+    mov r1, 0
+    call _memset
+    mov r0, r4
+5:
+    pop r4
+    pop r1
+    jmp r1
+
+    

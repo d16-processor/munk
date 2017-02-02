@@ -1,0 +1,6 @@
+.global
+_heap_free:
+    ld r1,[_program_break]
+    mov r0,r7
+    sub r0,r1
+    ret
