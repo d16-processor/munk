@@ -1,0 +1,13 @@
+_start:
+    mov r0, _end
+    mov r2, 64 ;words to copy
+    mov r3, 0xfc00
+loop:
+    ld r1,[r0]
+    st [r3], r1
+    add r0,2
+    add r3,2
+    sub r2,1
+    jmp.ne loop
+    jmp 0xfc00
+_end:

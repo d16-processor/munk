@@ -3,3 +3,5 @@ munk
 **/*.i
 **/*.asm
 **/.*.swp
+**/*.dsym
+boothex/boothex
