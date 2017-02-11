@@ -4,4 +4,7 @@ munk
 **/*.asm
 **/.*.swp
 **/*.dsym
+**/*.hex
+munk.hex
+start.o
 boothex/boothex

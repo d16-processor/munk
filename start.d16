@@ -1,9 +1,10 @@
 start:
-	mov r7, 0xfe00
+	mov r7, 0x3ffe
     mov r0,_heap_start
     st [_program_break], r0
 	mov r0,3
 	mov r1,1
 	call _main
-	kill
+hang:
+    jmp hang
 	
